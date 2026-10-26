@@ -678,10 +678,8 @@ async function seedLeaveBalances(companyId: string) {
 }
 
 async function main() {
-  await syncPermissionCatalogue();
-
-  const existing = await prisma.permission.count();
-  if (existing > 0 && (await prisma.company.count()) > 0) {
+  if ((await prisma.company.count()) > 0) {
+    await syncPermissionCatalogue();
     const company = await prisma.company.findFirst();
     if (company) {
       await ensureDefaultModuleConfig(company.id);
@@ -691,10 +689,6 @@ async function main() {
       await ensureComplianceDefaults(company.id);
     }
     console.log("Seed upgrade applied (permissions + default module config).");
-    return;
-  }
-  if (existing > 0) {
-    console.log("Seed already applied — skipping demo data.");
     return;
   }
 
